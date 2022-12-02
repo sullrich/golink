@@ -33,11 +33,12 @@ import (
 )
 
 var (
-	verbose    = flag.Bool("verbose", false, "be verbose")
-	sqlitefile = flag.String("sqlitedb", "", "path of SQLite database to store links")
-	dev        = flag.String("dev-listen", "", "if non-empty, listen on this addr and run in dev mode; auto-set sqlitedb if empty and don't use tsnet")
-	snapshot   = flag.String("snapshot", "", "file path of snapshot file")
-	hostname   = flag.String("hostname", "go", "service name")
+	verbose     = flag.Bool("verbose", false, "be verbose")
+	sqlitefile  = flag.String("sqlitedb", "", "path of SQLite database to store links")
+	dev         = flag.String("dev-listen", "", "if non-empty, listen on this addr and run in dev mode; auto-set sqlitedb if empty and don't use tsnet")
+	snapshot    = flag.String("snapshot", "", "file path of snapshot file")
+	hostname    = flag.String("hostname", "go", "service name")
+	loginserver = flag.String("login-server", "", "specify a custom control server")
 )
 
 var stats struct {
@@ -123,6 +124,10 @@ func Run() error {
 	}
 	if *verbose {
 		srv.Logf = log.Printf
+	}
+	if *loginserver != "" {
+		log.Printf("Using custom control server %s", *loginserver)
+		srv.ControlURL = *loginserver
 	}
 	if err := srv.Start(); err != nil {
 		return err
